@@ -37,10 +37,6 @@ mongoose
     console.error("Failed to connect to MongoDB", err);
   });
 
-app.get("/test", (req, res) => {
-  res.send("<h1>test is ok</h1>");
-});
-
 app.post("/register", async (req, res) => {
   const { Name, Email, Pass } = req.body;
 
@@ -125,29 +121,20 @@ app.post("/logout", (req, res) => {
 
 // upload by link
 app.post("/upload-by-link", async (req, res) => {
-  const { link } = req.body;
+  const { link } = req.body; 
   const extension = Date.now() + ".jpg";
-  await imagedown.image({
-    url: link,
-    dest: __dirname + "/uploads/" + extension,
-  });
-  res.json(extension);
+  try {
+    await imagedown.image({
+      url: link,
+      dest: __dirname + "/uploads/" + extension,
+    });
+    res.json(extension);
+  } catch (error) {
+    console.error("Error downloading image:", error);
+    res.status(500).json({ error: "Failed to download image" });
+  }
 });
-const upload = multer({ dest: "uploads/" });
 
-// Define your upload route
-// app.post('/upload', upload.array('photos', 100), (req, res) => {
-//   const uploadedFiles = [];
-//   req.files.forEach(file => {
-//     const { path: tempPath, originalname } = file;
-//     const ext = path.extname(originalname);
-//     const newPath = tempPath + ext;
-//     fs.renameSync(tempPath, newPath);
-//     uploadedFiles.push(newPath.replace('/uploads/', ''));
-//   });
-
-//   res.json(uploadedFiles); // Respond with the uploaded files information
-// });
 
 app.post("/places", async (req, res) => {
   const { token } = req.cookies;
@@ -162,6 +149,7 @@ app.post("/places", async (req, res) => {
     checkInTime,
     checkOutTime,
     maxGuests,
+    Price
   } = req.body;
   if (token) {
     jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
@@ -178,6 +166,7 @@ app.post("/places", async (req, res) => {
         checkInTime,
         checkOutTime,
         maxGuests,
+        Price
       });
       res.json(placedoc);
     });
@@ -222,6 +211,7 @@ app.put("/places", async (req, res) => {
     checkInTime,
     checkOutTime,
     maxGuests,
+    Price
   } = req.body;
 
   jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
@@ -241,6 +231,7 @@ app.put("/places", async (req, res) => {
         checkInTime,
         checkOutTime,
         maxGuests,
+        Price
       });
       await placedoc.save();
       res.json("data updated");
@@ -278,7 +269,15 @@ app.post("/booking", async (req, res) => {
       try {
         const { checkIn, checkOut, Guests, Name, Mob, place, price } = req.body;
 
-        if (!checkIn || !checkOut || !Guests || !Name || !Mob || !place || !price) {
+        if (
+          !checkIn ||
+          !checkOut ||
+          !Guests ||
+          !Name ||
+          !Mob ||
+          !place ||
+          !price
+        ) {
           return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -312,8 +311,10 @@ app.get("/bookings", async (req, res) => {
       }
       const { id } = userdata;
       try {
-        const bookings = await bookingmodel.find({ user: id }).populate('place');
-        // console.log(bookings); 
+        const bookings = await bookingmodel
+          .find({ user: id })
+          .populate("place");
+        // console.log(bookings);
         res.json(bookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -325,7 +326,32 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
+app.get("/booking/:id", async (req, res) => {
+  const { token } = req.cookies;
+  if (token) {
+    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
+      if (err) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+      try {
+        const { id } = req.params;
+        const data = await bookingmodel.findById(id);
+        res.json(data);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
+  } else {
+    res.status(401).json({ message: "No token provided" });
+  }
+});
 
+app.delete("/delete-bookings/:id", async (req, res) => {
+  const { id } = req.params;
+  const data =  await bookingmodel.findByIdAndDelete(id);
+  res.json(data);
+});
 app.listen(4000, () => {
   console.log("Server is running on http://localhost:4000");
 });

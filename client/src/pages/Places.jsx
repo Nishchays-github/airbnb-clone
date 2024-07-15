@@ -9,10 +9,17 @@ const Places = () => {
   const { action } = useParams();
 
   useEffect(() => {
-    axios.get("http://localhost:4000/places").then(({ data }) => {
-      setPlaces(data);
-    });
+    fetchPlaces();
   }, []);
+
+  const fetchPlaces = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/places");
+      setPlaces(response.data);
+    } catch (error) {
+      console.error("Error fetching places:", error);
+    }
+  };
 
   return (
     <div>
@@ -29,7 +36,7 @@ const Places = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-6"
+              className="w-6 h-6"
             >
               <path
                 strokeLinecap="round"
@@ -39,34 +46,30 @@ const Places = () => {
             </svg>
             <div>Add new places</div>
           </Link>
-          <div className="mt-4 ">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {places.length > 0 &&
               places.map((place) => (
                 <Link
                   to={"/account/places/" + place._id}
-                  className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl"
+                  className="flex cursor-pointer bg-gray-100 rounded-2xl overflow-hidden"
                   key={place._id}
                 >
-                  <div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
-                    <div className="flex w-full h-32 bg-gray-300 mb-4">
-                      {place.photos.length > 0 && (
-                        <img
-                          className="object-cover w-20 h-full rounded-2xl"
-                          src={`http://localhost:4000/uploads/${place?.photos[0]}`}
-                          alt={place.title}
-                        />
-                      )}
-                    </div>
-                    <div className="grow-0 shrink">
-                      <h2 className="text-xl font-semibold mb-2">
-                        {place.title}
-                      </h2>
-                      <p className="text-sm flex-grow overflow-hidden text-ellipsis">
-                        {place.description.length > 100
-                          ? `${place.description.substring(0, 100)}...`
-                          : place.description}
-                      </p>
-                    </div>
+                  <div className="w-48 h-32 relative">
+                    {place.photos.length > 0 && (
+                      <img
+                        className="object-cover w-full h-32 rounded-t-2xl"
+                        src={`http://localhost:4000/uploads/${place?.photos[0]}`}
+                        alt={place.title}
+                      />
+                    )}
+                  </div>
+                  <div className="p-4 flex flex-col justify-between">
+                    <h2 className="text-xl font-semibold mb-2">{place.title}</h2>
+                    <p className="text-sm line-clamp-3">
+                      {place.description.length > 100
+                        ? `${place.description.substring(0, 100)}...`
+                        : place.description}
+                    </p>
                   </div>
                 </Link>
               ))}

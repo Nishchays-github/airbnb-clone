@@ -49,7 +49,7 @@ const ShowingAllPics = () => {
         </svg>
         close photos
       </Link>
-      <div className="grid grid-cols-3 gap-4 mt-8 bg-black rounded-lg">
+      <div className="grid grid-cols-3 gap-4 mt-8 bg-slate-100 rounded-lg">
         {pics.map((photo, index) => (
           <div key={index} className="flex justify-center items-center">
             <img

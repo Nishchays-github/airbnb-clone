@@ -114,15 +114,8 @@ const PlacesForm = () => {
           onChange={(ev) => setPrice(ev.target.value)}
           required
         />
-        <label htmlFor="photoLink">Photo Link</label>
-        <input
-          type="text"
-          id="photoLink"
-          value={photoLink}
-          onChange={(ev) => setPhotoLink(ev.target.value)}
-        />
         <label htmlFor="photos">Photos</label>
-        <PhotosUploader photos={photos} setPhotos={setPhotos} />
+        <PhotosUploader photos={photos} setPhotos={setPhotos} photoLink={photoLink} setPhotoLink={setPhotoLink}/>
         <label htmlFor="description">Description</label>
         <textarea
           id="description"
