@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import AccountNav from "./AccountNav";
 import axios from "axios";
-import ImgView from "./ImgView";
 import { differenceInCalendarDays, format } from "date-fns";
 import { Link } from "react-router-dom";
 
 const BookingPage = () => {
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -16,8 +17,10 @@ const BookingPage = () => {
     try {
       const response = await axios.get("http://localhost:4000/bookings");
       setBookings(response.data);
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
+      setLoading(false);
+    } catch (err) {
+      setError("Error fetching bookings");
+      setLoading(false);
     }
   };
 
@@ -25,24 +28,40 @@ const BookingPage = () => {
     try {
       await axios.delete(`http://localhost:4000/delete-bookings/${id}`);
       fetchBookings();
-    } catch (error) {
-      console.error("Error cancelling booking:", error);
+    } catch (err) {
+      console.error("Error cancelling booking:", err);
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div>
       <AccountNav />
       <div>
-        {bookings.length > 0 &&
+        {bookings.length === 0 ? (
+          <div className="text-3xl mt-4 text-center">No bookings yet...</div>
+        ) : (
           bookings.map((booking) => (
             <div className="flex m-2" key={booking._id}>
               <Link
-                to={"/place/"+ booking.place._id}
+                to={"/place/" + booking.place._id}
                 className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden h-40 w-full"
               >
                 <div className="w-48 h-full">
-                  <ImgView place={booking.place} />
+                  {booking.place.photos.length > 0 && (
+                    <img
+                      className="object-cover h-full w-44"
+                      src={`http://localhost:4000/uploads/${booking.place?.photos[0]}`}
+                      alt="Booking"
+                    />
+                  )}
                 </div>
                 <div className="py-3 flex-grow flex flex-col justify-start">
                   <h2 className="text-2xl">{booking?.place?.title}</h2>
@@ -76,13 +95,14 @@ const BookingPage = () => {
                 </div>
               </Link>
               <button
-                className="h-20 w-20 absolute mb-1 bg-red-300 hover:bg-red-400 text-gray-800 font-semibold rounded-xl"
+                className="h-20 w-20 absolute mb-1 bg-slate-300 hover:bg-slate-400 text-red-800 font-semibold opacity-65 rounded-xl"
                 onClick={() => cancel(booking._id)}
               >
                 Cancel
               </button>
             </div>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );

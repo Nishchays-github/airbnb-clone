@@ -38,9 +38,9 @@ const Bookingwidget = ({ place }) => {
         place: place._id,
       });
       const id = res.data._id;
-      setRedirect(`/account/bookings/${id}`);
+      setRedirect(`/account/bookings`);
     } catch (error) {
-      console.error("Error booking place:", error);
+      alert('first login to airbnb');
     }
   }
   if (redirect) {

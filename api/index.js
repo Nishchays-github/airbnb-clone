@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const fs = require("fs");
 const bookingmodel = require("./models/bookings.js");
 require("dotenv").config();
 const app = express();
@@ -37,12 +36,22 @@ mongoose
     console.error("Failed to connect to MongoDB", err);
   });
 
+// Utility function for token verification
+const verifyToken = (token, res, callback) => {
+  if (token) {
+    jwt.verify(token, jwtSalt, {}, (err, userdata) => {
+      if (err) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+      callback(userdata);
+    });
+  } else {
+    res.status(401).json({ message: "No token provided" });
+  }
+};
+
 app.post("/register", async (req, res) => {
   const { Name, Email, Pass } = req.body;
-
-  // Log incoming request body to check the values
-
-  // Check for missing fields
   if (!Name || !Email || !Pass) {
     return res
       .status(400)
@@ -52,15 +61,13 @@ app.post("/register", async (req, res) => {
   try {
     const existingUser = await user.findOne({ Email });
     if (existingUser) {
-      return res.status(400).json({ error: "Email is already in use" });
+      return res.status(400).json("Email is already in use");
     }
-
     const userdoc = await user.create({
       Name,
       Email,
       Pass: bcrypt.hashSync(Pass, bcryptSalt),
     });
-    console.log("User registered successfully");
     res.json(userdoc);
   } catch (e) {
     console.error("Error during user registration", e);
@@ -73,9 +80,8 @@ app.post("/login", async (req, res) => {
   try {
     const userdoc = await user.findOne({ Email });
     if (userdoc) {
-      const passok = bcrypt.compareSync(Pass, userdoc.Pass); // Ensure the property name matches your schema
+      const passok = bcrypt.compareSync(Pass, userdoc.Pass);
       if (passok) {
-        console.log("Password ok");
         jwt.sign(
           { Email: userdoc.Email, id: userdoc._id },
           jwtSalt,
@@ -89,11 +95,9 @@ app.post("/login", async (req, res) => {
           }
         );
       } else {
-        console.log("Password not ok");
         res.status(422).json({ message: "Password not ok" });
       }
     } else {
-      console.log("User not found");
       res.status(404).json({ message: "User not found" });
     }
   } catch (e) {
@@ -104,24 +108,18 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) throw err;
-      const { Name, Email, _id } = await user.findById(userdata.id);
-      res.json({ Name, Email, _id });
-    });
-  } else res.json(token);
+  verifyToken(token, res, async (userdata) => {
+    const { Name, Email, _id } = await user.findById(userdata.id);
+    res.json({ Name, Email, _id });
+  });
 });
-
-// logout function
 
 app.post("/logout", (req, res) => {
   res.cookie("token", "").json(true);
 });
 
-// upload by link
 app.post("/upload-by-link", async (req, res) => {
-  const { link } = req.body; 
+  const { link } = req.body;
   const extension = Date.now() + ".jpg";
   try {
     await imagedown.image({
@@ -135,13 +133,12 @@ app.post("/upload-by-link", async (req, res) => {
   }
 });
 
-
 app.post("/places", async (req, res) => {
   const { token } = req.cookies;
   const {
+    Email,
     title,
     address,
-    photoLink,
     photos,
     description,
     perks,
@@ -149,81 +146,15 @@ app.post("/places", async (req, res) => {
     checkInTime,
     checkOutTime,
     maxGuests,
-    Price
+    Price,
   } = req.body;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) throw err;
+
+  verifyToken(token, res, async (userdata) => {
+    try {
       const placedoc = await placemodel.create({
-        owner: userdata.id,
+        Email,
         title,
         address,
-        photoLink,
-        photos: photos,
-        description,
-        perks,
-        extraInfo,
-        checkInTime,
-        checkOutTime,
-        maxGuests,
-        Price
-      });
-      res.json(placedoc);
-    });
-  }
-});
-
-app.get("/places", (req, res) => {
-  const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) {
-        return res.status(401).json({ message: "Unauthorized access" });
-      }
-      const { _id } = userdata;
-      try {
-        const places = await placemodel.find({ owner: _id });
-        res.json(places);
-      } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
-      }
-    });
-  } else {
-    res.status(401).json({ message: "No token provided" });
-  }
-});
-app.get("/places/:id", async (req, res) => {
-  const { id } = req.params;
-  res.json(await placemodel.findById(id));
-});
-
-app.put("/places", async (req, res) => {
-  const { token } = req.cookies;
-  const {
-    id,
-    title,
-    address,
-    photoLink,
-    photos,
-    description,
-    perks,
-    extraInfo,
-    checkInTime,
-    checkOutTime,
-    maxGuests,
-    Price
-  } = req.body;
-
-  jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-    if (err) return res.status(401).send("Unauthorized");
-
-    const placedoc = await placemodel.findById(id);
-    if (id === placedoc._id.toString()) {
-      placedoc.set({
-        owner: userdata._id,
-        title,
-        address,
-        photoLink,
         photos,
         description,
         perks,
@@ -231,15 +162,81 @@ app.put("/places", async (req, res) => {
         checkInTime,
         checkOutTime,
         maxGuests,
-        Price
+        Price,
       });
-      await placedoc.save();
-      res.json("data updated");
-    } else {
-      res.status(403).send("Forbidden");
+      res.json(placedoc);
+    } catch (error) {
+      res.status(400).json({ message: "Error creating place", error });
     }
   });
 });
+
+app.get("/places", async (req, res) => {
+  const { Email } = req.query;
+  try {
+    const places = await placemodel.find({ Email });
+    res.json(places);
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching places", error });
+  }
+});
+
+app.get("/places/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const place = await placemodel.findById(id);
+    res.json(place);
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching place", error });
+  }
+});
+
+app.put("/places/:id", async (req, res) => {
+  const { token } = req.cookies;
+  const { id } = req.params;
+  const {
+    Email,
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkInTime,
+    checkOutTime,
+    maxGuests,
+    Price,
+  } = req.body;
+
+  verifyToken(token, res, async (userdata) => {
+    try {
+      const placedoc = await placemodel.findById(id);
+      // console.log(title,placedoc.Email);
+      if (Email !== placedoc.Email) {
+        return res.status(403).json("Unauthorized access");
+      }
+
+      placedoc.set({
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkInTime,
+        checkOutTime,
+        maxGuests,
+        Price,
+      });
+      
+      await placedoc.save();
+      res.json("Data updated");
+    } catch (error) {
+      res.status(400).json({ message: "Error updating place", error });
+    }
+  });
+});
+
 
 app.get("/list-places", async (req, res) => {
   try {
@@ -260,99 +257,75 @@ app.get("/photos/:id", async (req, res) => {
 
 app.post("/booking", async (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) {
-        return res.status(401).json({ message: "Unauthorized access" });
-      }
-      const { id } = userdata;
-      try {
-        const { checkIn, checkOut, Guests, Name, Mob, place, price } = req.body;
+  verifyToken(token, res, async (userdata) => {
+    const { id } = userdata;
+    try {
+      const { checkIn, checkOut, Guests, Name, Mob, place, price } = req.body;
 
-        if (
-          !checkIn ||
-          !checkOut ||
-          !Guests ||
-          !Name ||
-          !Mob ||
-          !place ||
-          !price
-        ) {
-          return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        const userd = await bookingmodel.create({
-          place,
-          user: id,
-          checkIn,
-          checkOut,
-          guests: Guests,
-          name: Name,
-          phone: Mob,
-          price,
-        });
-        res.json(userd);
-      } catch (error) {
-        console.error("Error creating booking:", error);
-        res.status(500).json({ message: "Internal server error" });
+      if (
+        !checkIn ||
+        !checkOut ||
+        !Guests ||
+        !Name ||
+        !Mob ||
+        !place ||
+        !price
+      ) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
-    });
-  } else {
-    res.status(401).json({ message: "No token provided" });
-  }
+
+      const userd = await bookingmodel.create({
+        place,
+        user: id,
+        checkIn,
+        checkOut,
+        guests: Guests,
+        name: Name,
+        phone: Mob,
+        price,
+      });
+      res.json(userd);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 });
 
 app.get("/bookings", async (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) {
-        return res.status(401).json({ message: "Unauthorized access" });
-      }
-      const { id } = userdata;
-      try {
-        const bookings = await bookingmodel
-          .find({ user: id })
-          .populate("place");
-        // console.log(bookings);
-        res.json(bookings);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-        res.status(500).json({ message: "Internal server error" });
-      }
-    });
-  } else {
-    res.status(401).json({ message: "No token provided" });
-  }
+  verifyToken(token, res, async (userdata) => {
+    const { id } = userdata;
+    try {
+      const bookings = await bookingmodel.find({ user: id }).populate("place");
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 });
 
 app.get("/booking/:id", async (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSalt, {}, async (err, userdata) => {
-      if (err) {
-        return res.status(401).json({ message: "Unauthorized access" });
-      }
-      try {
-        const { id } = req.params;
-        const data = await bookingmodel.findById(id);
-        res.json(data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-        res.status(500).json({ message: "Internal server error" });
-      }
-    });
-  } else {
-    res.status(401).json({ message: "No token provided" });
-  }
+  verifyToken(token, res, async (userdata) => {
+    try {
+      const { id } = req.params;
+      const data = await bookingmodel.findById(id);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 });
 
 app.delete("/delete-bookings/:id", async (req, res) => {
   const { id } = req.params;
-  const data =  await bookingmodel.findByIdAndDelete(id);
+  const data = await bookingmodel.findByIdAndDelete(id);
   res.json(data);
 });
+
 app.listen(4000, () => {
   console.log("Server is running on http://localhost:4000");
 });
-// lywMrbdGs02xfFKq

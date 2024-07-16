@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PlacesForm from "./PlacesForm";
 import AccountNav from "./AccountNav";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { userContext } from "../userContext";
 
 const Places = () => {
   const [places, setPlaces] = useState([]);
   const { action } = useParams();
-
+  const userclass = useContext(userContext);
+  const { user } = userclass;
   useEffect(() => {
     fetchPlaces();
   }, []);
 
   const fetchPlaces = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/places");
+      const response = await axios.get(
+        `http://localhost:4000/places?Email=${user.Email}`
+      );
       setPlaces(response.data);
     } catch (error) {
       console.error("Error fetching places:", error);
@@ -64,7 +68,9 @@ const Places = () => {
                     )}
                   </div>
                   <div className="p-4 flex flex-col justify-between">
-                    <h2 className="text-xl font-semibold mb-2">{place.title}</h2>
+                    <h2 className="text-xl font-semibold mb-2">
+                      {place.title}
+                    </h2>
                     <p className="text-sm line-clamp-3">
                       {place.description.length > 100
                         ? `${place.description.substring(0, 100)}...`

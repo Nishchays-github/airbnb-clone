@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
@@ -10,15 +10,15 @@ const Register = () => {
   async function registeruser(ev) {
     ev.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/register", {
+      await axios.post("http://localhost:4000/register", {
         Name,
         Email,
         Pass
       });
-      alert("Registration successful");
+      alert(`welcome ${Name} ,Now login !`);
+      <Navigate to ={'/login'}/>
     } catch (e) {
-      console.error("Error during registration", e);
-      alert("Registration failed");
+      alert(e.response.data);
     }
   }
 

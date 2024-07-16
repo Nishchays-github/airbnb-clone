@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import PhotosUploader from "./Photosuploader";
 import Perkspages from "./PerksPage";
 import { useParams, Navigate } from "react-router-dom";
 import AccountNav from "./AccountNav";
+import { userContext } from "../userContext.jsx";
 
 const PlacesForm = () => {
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
   const [Price, setPrice] = useState(100);
+  const userclass = useContext(userContext);
   const [photoLink, setPhotoLink] = useState("");
   const [photos, setPhotos] = useState([]);
   const [description, setDescription] = useState("");
@@ -19,11 +21,25 @@ const PlacesForm = () => {
   const [checkOutTime, setCheckOutTime] = useState("");
   const [maxGuests, setMaxGuests] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const { user } = userclass;
+
+  useEffect(() => {
+    if (!user) {
+      setRedirect(true);
+    }
+  }, [user]);
 
   async function addNewPlace(ev) {
     ev.preventDefault();
+
+    if (!user) {
+      console.error("No user context available");
+      return;
+    }
+
+    const { Email } = user;
     const placeData = {
-      id,
+      Email,
       title,
       address,
       photoLink,
@@ -39,7 +55,7 @@ const PlacesForm = () => {
 
     try {
       if (id) {
-        await axios.put("http://localhost:4000/places", placeData);
+        await axios.put(`http://localhost:4000/places/${id}`, placeData);
       } else {
         await axios.post("http://localhost:4000/places", placeData);
       }
@@ -83,7 +99,7 @@ const PlacesForm = () => {
   }, [id]);
 
   if (redirect) {
-    return <Navigate to="/account/places" />;
+    return <Navigate to="/" />;
   }
 
   return (
@@ -115,7 +131,12 @@ const PlacesForm = () => {
           required
         />
         <label htmlFor="photos">Photos</label>
-        <PhotosUploader photos={photos} setPhotos={setPhotos} photoLink={photoLink} setPhotoLink={setPhotoLink}/>
+        <PhotosUploader
+          photos={photos}
+          setPhotos={setPhotos}
+          photoLink={photoLink}
+          setPhotoLink={setPhotoLink}
+        />
         <label htmlFor="description">Description</label>
         <textarea
           id="description"

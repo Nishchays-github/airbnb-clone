@@ -1,6 +1,7 @@
     const mongoose = require('mongoose');
 
     const placeSchema = new mongoose.Schema({
+      Email:{ type: String, required: true },
       title: { type: String, required: true },
       address: { type: String, required: true },
       photos: [String],
