@@ -96,7 +96,7 @@ const PlacesForm = () => {
       };
       fetchPlace();
     }
-  }, [id]);
+  }, []);
 
   if (redirect) {
     return <Navigate to="/" />;

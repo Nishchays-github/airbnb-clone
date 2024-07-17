@@ -1,25 +1,38 @@
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const AccountNav = () => {
-  let { subpage } = useParams();
-  function Linkclasses(type = null) {
-    let classes =
-      "py-2 px-6 inline-flex gap-2 text-white py-2 px-6 rounded-full ";
-    if (type === subpage || (subpage === undefined && type === "profile")) {
-      classes += "bg-red-400 text-white rounded-full";
+  const location = useLocation();
+  const fullPath = location.pathname;
+  const basePath = "/account";
+  const pathAfterBase = fullPath.startsWith(basePath)
+    ? fullPath.slice(basePath.length)
+    : fullPath;
+
+  const baseClass = "py-2 px-6 inline-flex gap-2 text-white rounded-full bg-gray-500";
+  const [profileClass, setProfileClass] = useState(baseClass);
+  const [listClass, setListClass] = useState(baseClass);
+  const [bookClass, setBookClass] = useState(baseClass);
+
+  useEffect(() => {
+    if (!pathAfterBase || pathAfterBase === '/') {
+      setProfileClass(`${baseClass} bg-red-700`);
+      setListClass(baseClass);
+      setBookClass(baseClass);
+    } else if (pathAfterBase === '/bookings') {
+      setBookClass(`${baseClass} bg-red-700`);
+      setListClass(baseClass);
+      setProfileClass(baseClass);
     } else {
-      classes += "bg-gray-500";
+      setListClass(`${baseClass} bg-red-700`);
+      setBookClass(baseClass);
+      setProfileClass(baseClass);
     }
-    return classes;
-  }
-  if (subpage === undefined) { 
-    subpage = "profile";
-  }
+  }, [pathAfterBase]);
 
   return (
     <nav className="w-full flex mt-8 justify-center gap-2 mb-8">
-      <Link className={Linkclasses("profile")} to={"/account"}>
+      <Link className={profileClass} to={"/account"}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -36,7 +49,7 @@ const AccountNav = () => {
         </svg>
         My Profile
       </Link>
-      <Link className={Linkclasses("bookings")} to={"/account/bookings"}>
+      <Link className={bookClass} to={"/account/bookings"}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -53,7 +66,7 @@ const AccountNav = () => {
         </svg>
         My Bookings
       </Link>
-      <Link className={Linkclasses("places")} to={"/account/places"}>
+      <Link className={listClass} to={"/account/places"}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

@@ -248,6 +248,19 @@ app.get("/list-places", async (req, res) => {
   }
 });
 
+app.delete("/places-delete/:id", async (req,res)=>{
+  const{id} =  req.params;
+  try{
+    const usedoc =  await placemodel.findByIdAndDelete(id);
+     res.json(usedoc);
+  }
+  catch{
+    res.json('server error');
+  }
+})
+
+
+
 app.get("/photos/:id", async (req, res) => {
   const { id } = req.params;
   const model = await placemodel.findById(id);

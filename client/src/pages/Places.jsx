@@ -9,6 +9,22 @@ const Places = () => {
   const [places, setPlaces] = useState([]);
   const { action } = useParams();
   const userclass = useContext(userContext);
+  async function delplace(id){
+    try{
+      axios.delete('http://localhost:4000/places-delete/'+id).then(
+        res=>{
+          console.log(res.data);
+        }
+      ).catch(
+        err=>{
+          console.log(err);
+        }
+      )
+    }
+    catch{
+      console.log('cent delete')
+    }
+  } 
   const { user } = userclass;
   useEffect(() => {
     fetchPlaces();
@@ -17,7 +33,7 @@ const Places = () => {
   const fetchPlaces = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/places?Email=${user.Email}`
+        `http://localhost:4000/places?Email=${user?.Email}`
       );
       setPlaces(response.data);
     } catch (error) {
@@ -51,35 +67,41 @@ const Places = () => {
             <div>Add new places</div>
           </Link>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {places.length > 0 &&
-              places.map((place) => (
-                <Link
-                  to={"/account/places/" + place._id}
-                  className="flex cursor-pointer bg-gray-100 rounded-2xl overflow-hidden"
-                  key={place._id}
-                >
-                  <div className="w-48 h-32 relative">
-                    {place.photos.length > 0 && (
-                      <img
-                        className="object-cover w-full h-32 rounded-t-2xl"
-                        src={`http://localhost:4000/uploads/${place?.photos[0]}`}
-                        alt={place.title}
-                      />
-                    )}
-                  </div>
-                  <div className="p-4 flex flex-col justify-between">
-                    <h2 className="text-xl font-semibold mb-2">
-                      {place.title}
-                    </h2>
-                    <p className="text-sm line-clamp-3">
-                      {place.description.length > 100
-                        ? `${place.description.substring(0, 100)}...`
-                        : place.description}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+      {places.length > 0 &&
+        places.map((place) => (
+          <div
+            className="flex flex-col cursor-pointer bg-gray-100 rounded-2xl overflow-hidden"
+            key={place._id}
+          >
+            <Link
+              to={"/account/places/" + place._id}
+              className="flex-grow flex"
+            >
+              <div className="w-2/5 h-40 relative">
+                {place.photos.length > 0 && (
+                  <img
+                    className="object-cover w-full h-full"
+                    src={`http://localhost:4000/uploads/${place?.photos[0]}`}
+                    alt={place.title}
+                  />
+                )}
+              </div>
+              <div className="w-4/5 p-4 flex flex-col justify-between">
+                <h2 className="text-xl font-semibold mb-2">{place.title}</h2>
+                <p className="text-sm line-clamp-3">
+                  {place.description.length > 100
+                    ? `${place.description.substring(0, 100)}...`
+                    : place.description}
+                </p>
+              </div>
+            </Link>
+            <button onClick={()=>delplace(place._id)} className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 border border-blue-700 rounded w-full h-12 opacity-60">
+              Delete Listing
+            </button>
           </div>
+        ))}
+    </div>
+  );
         </div>
       )}
       {action === "new" && <PlacesForm />}
