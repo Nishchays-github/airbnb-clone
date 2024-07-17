@@ -58,7 +58,7 @@ const PlacePage = () => {
         )}
         <Link
           to={"/photos/" + place._id}
-          className="absolute w-40 flex gap-1 right-72 bottom-48 bg-opacity-40 bg-black"
+          className="absolute font-bold w-40 flex gap-1 right-72 bottom-48 bg-opacity-80 bg-red-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
