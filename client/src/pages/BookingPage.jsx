@@ -49,21 +49,24 @@ const BookingPage = () => {
           <div className="text-3xl mt-4 text-center">No bookings yet...</div>
         ) : (
           bookings.map((booking) => (
-            <div className="flex m-2" key={booking._id}>
+            <div
+              className="flex flex-col m-2 bg-gray-200 rounded-2xl overflow-hidden "
+              key={booking._id}
+            >
               <Link
                 to={"/place/" + booking.place._id}
-                className="flex gap-4 bg-gray-200 rounded-2xl overflow-hidden h-40 w-full"
+                className="flex flex-row"
               >
-                <div className="w-48 h-full">
+                <div className="w-40 h-70 relative">
                   {booking.place.photos.length > 0 && (
                     <img
-                      className="object-cover h-full w-44"
+                      className="object-cover "
                       src={`http://localhost:4000/uploads/${booking.place?.photos[0]}`}
                       alt="Booking"
                     />
                   )}
                 </div>
-                <div className="py-3 flex-grow flex flex-col justify-start">
+                <div className="w-4/5 p-4 flex flex-col justify-start">
                   <h2 className="text-2xl">{booking?.place?.title}</h2>
                   <div className="text-gray-600 text-xl font-semibold flex items-center gap-2">
                     <svg
@@ -95,7 +98,7 @@ const BookingPage = () => {
                 </div>
               </Link>
               <button
-                className="h-20 w-20 absolute mb-1 bg-slate-300 hover:bg-slate-400 text-red-800 font-semibold opacity-65 rounded-xl"
+                className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-700 rounded-b-2xl"
                 onClick={() => cancel(booking._id)}
               >
                 Cancel
