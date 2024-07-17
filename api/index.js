@@ -12,8 +12,8 @@ const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSalt = "nxjadjw23ni2bd";
 const cookieparser = require("cookie-parser");
 const imagedown = require("image-downloader");
-const multer = require("multer");
 const placemodel = require("./models/place.js");
+const PORT =  4000||process.env.PORT;
 app.use(express.json());
 app.use(cookieparser());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -339,6 +339,6 @@ app.delete("/delete-bookings/:id", async (req, res) => {
   res.json(data);
 });
 
-app.listen(4000, () => {
+app.listen(PORT, () => {
   console.log("Server is running on http://localhost:4000");
 });
