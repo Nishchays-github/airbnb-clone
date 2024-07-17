@@ -23,10 +23,7 @@ app.use(
     origin: "http://localhost:5173",
   })
 );
-
-const url =
-  "mongodb+srv://nishchayparashar1008:Nishchay@cluster1.ywkdbhr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1";
-
+const url =  "mongodb+srv://nishchayparashar1008:Nishchay@cluster1.ywkdbhr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1"
 mongoose
   .connect(url)
   .then(() => {
