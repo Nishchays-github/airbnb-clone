@@ -1,6 +1,6 @@
 {
   "rewrites":[
-    {"source":"/(.*),"destination": "/"}
+    {"source":"/(.*)","destination": "/"}
   ]
   "version": 2,
   "builds": [
