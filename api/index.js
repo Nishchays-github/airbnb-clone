@@ -47,7 +47,11 @@ const verifyToken = (token, res, callback) => {
     res.status(401).json({ message: "No token provided" });
   }
 };
+app.get("/",(req,res)=>{
+  res.json("OK");
+})
 
+  
 app.post("/register", async (req, res) => {
   const { Name, Email, Pass } = req.body;
   if (!Name || !Email || !Pass) {
