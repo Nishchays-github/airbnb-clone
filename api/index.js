@@ -20,7 +20,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     credentials: true,
-    origin: ["https://deploy-mern-1whq.vercel.app"],
+    origin: ["https://airbnb-clone-client-eight.vercel.app/"],
     methods:["POST" , "GET"]
   })
 );
