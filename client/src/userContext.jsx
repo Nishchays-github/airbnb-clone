@@ -10,12 +10,15 @@ export function UserContextProvider({ children }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/profile").then(({ data }) => {
-      setuser(data);
-      setReady(true);
-    }).catch(() => {
-      setReady(true); // Ensure ready is set even on error
-    });
+    axios
+      .get("https://airbnb-clone-api-1.vercel.app/profile")
+      .then(({ data }) => {
+        setuser(data);
+        setReady(true);
+      })
+      .catch(() => {
+        setReady(true); // Ensure ready is set even on error
+      });
   }, []);
 
   return (

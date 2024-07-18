@@ -21,15 +21,14 @@ const Account = () => {
   }
 
   async function logout() {
-    await axios.post("http://localhost:4000/logout");
+    await axios.post("https://airbnb-clone-api-1.vercel.app/logout");
     setuser(null);
     settohome(true);
   }
 
-  
   return (
     <div>
-      <AccountNav/>
+      <AccountNav />
       {subpage === "profile" && (
         <div className="text-center max-w-lg mx-auto">
           Hello, <strong>{user.Name}</strong> (<strong>{user.Email}</strong>)

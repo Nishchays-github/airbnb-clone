@@ -55,9 +55,15 @@ const PlacesForm = () => {
 
     try {
       if (id) {
-        await axios.put(`http://localhost:4000/places/${id}`, placeData);
+        await axios.put(
+          `https://airbnb-clone-api-1.vercel.app/places/${id}`,
+          placeData
+        );
       } else {
-        await axios.post("http://localhost:4000/places", placeData);
+        await axios.post(
+          "https://airbnb-clone-api-1.vercel.app/places",
+          placeData
+        );
       }
       setRedirect(true);
     } catch (error) {
@@ -68,7 +74,9 @@ const PlacesForm = () => {
   useEffect(() => {
     if (id) {
       const fetchPlace = async () => {
-        const result = await axios.get(`http://localhost:4000/places/${id}`);
+        const result = await axios.get(
+          `https://airbnb-clone-api-1.vercel.app/places/${id}`
+        );
         const {
           title,
           address,

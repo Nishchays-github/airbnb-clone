@@ -10,13 +10,13 @@ const Register = () => {
   async function registeruser(ev) {
     ev.preventDefault();
     try {
-      await axios.post("http://localhost:4000/register", {
+      await axios.post("https://airbnb-clone-api-1.vercel.app/register", {
         Name,
         Email,
-        Pass
+        Pass,
       });
       alert(`welcome ${Name} ,Now login !`);
-      <Navigate to ={'/login'}/>
+      <Navigate to={"/login"} />;
     } catch (e) {
       alert(e.response.data);
     }
@@ -48,7 +48,10 @@ const Register = () => {
           <button type="submit">Register</button>
           <div>
             Already have an account?
-            <Link to="/login" className="text-blue-400"> Login</Link>
+            <Link to="/login" className="text-blue-400">
+              {" "}
+              Login
+            </Link>
           </div>
         </form>
       </div>

@@ -10,7 +10,9 @@ const ShowingAllPics = () => {
   useEffect(() => {
     const fetchPics = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/photos/${id}`);
+        const response = await axios.get(
+          `https://airbnb-clone-api-1.vercel.app/photos/${id}`
+        );
         setPics(response.data); // Assuming response.data is an array of photo filenames
         setLoading(false); // Update loading state after fetching data
       } catch (error) {
@@ -54,7 +56,7 @@ const ShowingAllPics = () => {
           <div key={index} className="flex justify-center items-center">
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={`http://localhost:4000/uploads/${photo}`}
+              src={`https://airbnb-clone-api-1.vercel.app/uploads/${photo}`}
               alt={`Photo ${index + 1}`}
             />
           </div>

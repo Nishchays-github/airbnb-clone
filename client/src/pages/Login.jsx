@@ -12,7 +12,10 @@ const Login = () => {
   async function handleLogin(ev) {
     ev.preventDefault();
     try {
-      const response = await axios.post('http://localhost:4000/login', { Email, Pass });
+      const response = await axios.post(
+        "https://airbnb-clone-api-1.vercel.app/login",
+        { Email, Pass }
+      );
       setuser(response.data);
       setRedirect(true);
       alert("Login successful");

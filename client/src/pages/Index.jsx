@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Index = () => {
   const [places, setPlaces] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/list-places', { withCredentials: true })
-      .then(res => {
+    axios
+      .get("https://airbnb-clone-api-1.vercel.app/list-places", {
+        withCredentials: true,
+      })
+      .then((res) => {
         setPlaces(res.data);
       })
-      .catch(error => {
-        console.error('Error fetching places:', error);
+      .catch((error) => {
+        console.error("Error fetching places:", error);
       });
   }, []);
 
@@ -23,7 +26,7 @@ const Index = () => {
             <div className="bg-white rounded-2xl p-4 flex flex-col items-start">
               {place.photos?.[0] && (
                 <img
-                  src={`http://localhost:4000/uploads/${place.photos[0]}`}
+                  src={`https://airbnb-clone-api-1.vercel.app/uploads/${place.photos[0]}`}
                   alt={place.title}
                   className="rounded-2xl object-cover w-full h-40 mb-2"
                 />

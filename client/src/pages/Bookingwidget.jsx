@@ -22,25 +22,27 @@ const Bookingwidget = ({ place }) => {
     }
   }, [checkIn, checkOut, place.Price]);
 
-
   useEffect(() => {
     if (user) setName(user.Name);
   }, [user]);
   async function book() {
     try {
-      const res = await axios.post("http://localhost:4000/booking", {
-        checkIn,
-        checkOut,
-        Guests,
-        Name,
-        Mob,
-        price,
-        place: place._id,
-      });
+      const res = await axios.post(
+        "https://airbnb-clone-api-1.vercel.app/booking",
+        {
+          checkIn,
+          checkOut,
+          Guests,
+          Name,
+          Mob,
+          price,
+          place: place._id,
+        }
+      );
       const id = res.data._id;
       setRedirect(`/account/bookings`);
     } catch (error) {
-      alert('first login to airbnb');
+      alert("first login to airbnb");
     }
   }
   if (redirect) {
