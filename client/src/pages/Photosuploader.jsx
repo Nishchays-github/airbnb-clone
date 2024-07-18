@@ -5,7 +5,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
     ev.preventDefault();
     try {
       const { data: filename } = await axios.post(
-        "https://airbnb-clone-api-1.vercel.app/upload-by-link", // Update endpoint URL
+        "https://airbnb-clone-api-eight.vercel.app//upload-by-link", // Update endpoint URL
         { link: photoLink } // Send photoLink as data in the body
       );
       setPhotos((prev) => [...prev, filename]);
@@ -38,7 +38,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
 
     try {
       const res = await axios.post(
-        "https://airbnb-clone-api-1.vercel.app/upload",
+        "https://airbnb-clone-api-eight.vercel.app//upload",
         data,
         {
           headers: {
@@ -77,7 +77,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
             <div key={link} className="h-32 flex relative">
               <img
                 className="rounded-2xl w-full object-cover"
-                src={`https://airbnb-clone-api-1.vercel.app/uploads/${link}`}
+                src={`https://airbnb-clone-api-eight.vercel.app//uploads/${link}`}
                 alt="Uploaded"
               />
               {photos[0] === link && (

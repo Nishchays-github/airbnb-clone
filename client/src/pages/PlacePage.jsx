@@ -8,7 +8,7 @@ const PlacePage = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://airbnb-clone-api-1.vercel.app/places/${id}`)
+        .get(`https://airbnb-clone-api-eight.vercel.app//places/${id}`)
         .then((res) => {
           setplace(res.data);
         })
@@ -33,7 +33,7 @@ const PlacePage = () => {
           {place.photos?.[0] && (
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={`https://airbnb-clone-api-1.vercel.app/uploads/${place?.photos[0]}`}
+              src={`https://airbnb-clone-api-eight.vercel.app//uploads/${place?.photos[0]}`}
               alt={place.title}
             />
           )}
@@ -42,7 +42,7 @@ const PlacePage = () => {
           <div>
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={`https://airbnb-clone-api-1.vercel.app/uploads/${place?.photos[1]}`}
+              src={`https://airbnb-clone-api-eight.vercel.app//uploads/${place?.photos[1]}`}
               alt={place.title}
             />
           </div>
@@ -51,7 +51,7 @@ const PlacePage = () => {
           <div>
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={`https://airbnb-clone-api-1.vercel.app/uploads/${place?.photos[2]}`}
+              src={`https://airbnb-clone-api-eight.vercel.app//uploads/${place?.photos[2]}`}
               alt={place.title}
             />
           </div>

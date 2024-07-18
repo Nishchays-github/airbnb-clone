@@ -11,7 +11,7 @@ const ShowingAllPics = () => {
     const fetchPics = async () => {
       try {
         const response = await axios.get(
-          `https://airbnb-clone-api-1.vercel.app/photos/${id}`
+          `https://airbnb-clone-api-eight.vercel.app//photos/${id}`
         );
         setPics(response.data); // Assuming response.data is an array of photo filenames
         setLoading(false); // Update loading state after fetching data
@@ -56,7 +56,7 @@ const ShowingAllPics = () => {
           <div key={index} className="flex justify-center items-center">
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={`https://airbnb-clone-api-1.vercel.app/uploads/${photo}`}
+              src={`https://airbnb-clone-api-eight.vercel.app//uploads/${photo}`}
               alt={`Photo ${index + 1}`}
             />
           </div>

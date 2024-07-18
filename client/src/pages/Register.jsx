@@ -10,7 +10,7 @@ const Register = () => {
   async function registeruser(ev) {
     ev.preventDefault();
     try {
-      await axios.post("https://airbnb-clone-api-1.vercel.app/register", {
+      await axios.post("https://airbnb-clone-api-eight.vercel.app//register", {
         Name,
         Email,
         Pass,

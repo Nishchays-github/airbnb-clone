@@ -16,7 +16,7 @@ const BookingPage = () => {
   const fetchBookings = async () => {
     try {
       const response = await axios.get(
-        "https://airbnb-clone-api-1.vercel.app/bookings"
+        "https://airbnb-clone-api-eight.vercel.app//bookings"
       );
       setBookings(response.data);
       setLoading(false);
@@ -29,7 +29,7 @@ const BookingPage = () => {
   const cancel = async (id) => {
     try {
       await axios.delete(
-        `https://airbnb-clone-api-1.vercel.app/delete-bookings/${id}`
+        `https://airbnb-clone-api-eight.vercel.app//delete-bookings/${id}`
       );
       fetchBookings();
     } catch (err) {
@@ -65,7 +65,7 @@ const BookingPage = () => {
                   {booking.place.photos.length > 0 && (
                     <img
                       className="object-cover "
-                      src={`https://airbnb-clone-api-1.vercel.app/uploads/${booking.place?.photos[0]}`}
+                      src={`https://airbnb-clone-api-eight.vercel.app//uploads/${booking.place?.photos[0]}`}
                       alt="Booking"
                     />
                   )}
