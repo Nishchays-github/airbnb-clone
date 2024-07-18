@@ -21,7 +21,7 @@ const Account = () => {
   }
 
   async function logout() {
-    await axios.post("https://airbnb-clone-api-eight.vercel.app//logout");
+    await axios.post("https://airbnb-clone-api-eight.vercel.app/logout");
     setuser(null);
     settohome(true);
   }

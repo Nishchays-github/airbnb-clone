@@ -11,7 +11,7 @@ export function UserContextProvider({ children }) {
 
   useEffect(() => {
     axios
-      .get("https://airbnb-clone-api-eight.vercel.app//profile")
+      .get("https://airbnb-clone-api-eight.vercel.app/profile")
       .then(({ data }) => {
         setuser(data);
         setReady(true);

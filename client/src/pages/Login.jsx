@@ -13,7 +13,7 @@ const Login = () => {
     ev.preventDefault();
     try {
       const response = await axios.post(
-        "https://airbnb-clone-api-eight.vercel.app//login",
+        "https://airbnb-clone-api-eight.vercel.app/login",
         { Email, Pass }
       );
       setuser(response.data);

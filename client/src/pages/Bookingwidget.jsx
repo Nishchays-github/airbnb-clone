@@ -28,7 +28,7 @@ const Bookingwidget = ({ place }) => {
   async function book() {
     try {
       const res = await axios.post(
-        "https://airbnb-clone-api-eight.vercel.app//booking",
+        "https://airbnb-clone-api-eight.vercel.app/booking",
         {
           checkIn,
           checkOut,

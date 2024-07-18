@@ -12,9 +12,7 @@ const Places = () => {
   async function delplace(id) {
     try {
       axios
-        .delete(
-          "https://airbnb-clone-api-eight.vercel.app//places-delete/" + id
-        )
+        .delete("https://airbnb-clone-api-eight.vercel.app/places-delete/" + id)
         .then((res) => {
           console.log(res.data);
         })
@@ -33,7 +31,7 @@ const Places = () => {
   const fetchPlaces = async () => {
     try {
       const response = await axios.get(
-        `https://airbnb-clone-api-eight.vercel.app//places?Email=${user?.Email}`
+        `https://airbnb-clone-api-eight.vercel.app/places?Email=${user?.Email}`
       );
       setPlaces(response.data);
     } catch (error) {
@@ -81,7 +79,7 @@ const Places = () => {
                       {place.photos.length > 0 && (
                         <img
                           className="object-cover w-full h-full"
-                          src={`https://airbnb-clone-api-eight.vercel.app//uploads/${place?.photos[0]}`}
+                          src={`https://airbnb-clone-api-eight.vercel.app/uploads/${place?.photos[0]}`}
                           alt={place.title}
                         />
                       )}

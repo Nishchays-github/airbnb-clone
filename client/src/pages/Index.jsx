@@ -7,7 +7,7 @@ const Index = () => {
 
   useEffect(() => {
     axios
-      .get("https://airbnb-clone-api-eight.vercel.app//list-places", {
+      .get("https://airbnb-clone-api-eight.vercel.app/list-places", {
         withCredentials: true,
       })
       .then((res) => {
@@ -26,7 +26,7 @@ const Index = () => {
             <div className="bg-white rounded-2xl p-4 flex flex-col items-start">
               {place.photos?.[0] && (
                 <img
-                  src={`https://airbnb-clone-api-eight.vercel.app//uploads/${place.photos[0]}`}
+                  src={`https://airbnb-clone-api-eight.vercel.app/uploads/${place.photos[0]}`}
                   alt={place.title}
                   className="rounded-2xl object-cover w-full h-40 mb-2"
                 />
