@@ -20,7 +20,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: ["https://deploy-mern-1whq.vercel.app"],
+    methods:["POST" , "GET"]
   })
 );
 const url =  "mongodb+srv://nishchayparashar1008:Nishchay@cluster1.ywkdbhr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1"
