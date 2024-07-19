@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+let multer = require("multer");
 const path = require("path");
 const bookingmodel = require("./models/bookings.js");
 require("dotenv").config();
@@ -173,6 +174,21 @@ app.post("/places", async (req, res) => {
   });
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+app.post("/upload-by-multer", upload.array("photos", 100), (req, res) => {
+  const filenames = req.files.map(file => file.filename);
+  res.json(filenames);
+});
 app.get("/places", async (req, res) => {
   const { Email } = req.query;
   try {
