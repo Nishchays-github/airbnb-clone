@@ -1,30 +1,31 @@
 import { useState } from "react";
 import axios from "axios";
-const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
+
+const PhotosUploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
   async function addPhotoByLink(ev) {
     ev.preventDefault();
     try {
       const { data: filename } = await axios.post(
-        "https://airbnb-clone-api-eight.vercel.app/upload-by-link", // Update endpoint URL
-        { link: photoLink } // Send photoLink as data in the body
+        "https://airbnb-clone-api-eight.vercel.app/upload-by-link",
+        { link: photoLink }
       );
       setPhotos((prev) => [...prev, filename]);
-      setPhotoLink(""); // Clear photoLink input after successful upload
+      setPhotoLink("");
     } catch (error) {
       console.error("Error uploading photo by link:", error);
     }
   }
 
-  function removephoto(ev, link) {
+  function removePhoto(ev, link) {
     ev.preventDefault();
-    setPhotos([...photos.filter((pic) => pic !== link)]);
+    setPhotos((prev) => prev.filter((pic) => pic !== link));
   }
-  function coverphoto(ev, link) {
+
+  function coverPhoto(ev, link) {
     ev.preventDefault();
-    const newlist = [...photos.filter((pic) => pic !== link)];
-    const coverlist = [link, ...newlist];
-    setPhotos(coverlist);
+    setPhotos((prev) => [link, ...prev.filter((pic) => pic !== link)]);
   }
+
   async function uploadPhoto(ev) {
     const files = ev.target.files;
     if (!files.length) {
@@ -37,21 +38,18 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
     }
 
     try {
-      const res = await axios.post(
-        "https://airbnb-clone-api-eight.vercel.app/upload",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post("https://airbnb-clone-api-eight.vercel.app/upload-by-multer", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       const filenames = res.data;
       setPhotos((prev) => [...prev, ...filenames]);
     } catch (error) {
       console.error("Error uploading files:", error);
     }
   }
+
   return (
     <div>
       <h2 className="text-2xl mt-3">PHOTOS</h2>
@@ -77,7 +75,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
             <div key={link} className="h-32 flex relative">
               <img
                 className="rounded-2xl w-full object-cover"
-                src={`https://airbnb-clone-api-eight.vercel.app/uploads/${link}`}
+                src={`http://localhost:4000/uploads/${link}`}
                 alt="Uploaded"
               />
               {photos[0] === link && (
@@ -98,7 +96,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
               )}
               {photos[0] !== link && (
                 <button
-                  onClick={(ev) => coverphoto(ev, link)}
+                  onClick={(ev) => coverPhoto(ev, link)}
                   className="absolute w-10 left-1 bottom-1 bg-white text-black"
                 >
                   <svg
@@ -119,7 +117,7 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
               )}
               <button
                 className="absolute w-10 right-1 bottom-1 bg-white text-black"
-                onClick={(ev) => removephoto(ev, link)}
+                onClick={(ev) => removePhoto(ev, link)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -170,4 +168,4 @@ const photosuploader = ({ photos, setPhotos, photoLink, setPhotoLink }) => {
   );
 };
 
-export default photosuploader;
+export default PhotosUploader;
